@@ -46,6 +46,7 @@ class Img_map:
         if self.current_x + 1 < self.img_map.shape[0]:
             if self.img_map[self.current_x + 1][self.current_y].can_reach:
                 self.current_x = self.current_x + 1
+                print(f"current_X:{self.current_x},current_y={self.current_y}")
                 return True
             else:
                 print("Point is None")
@@ -66,6 +67,7 @@ class Img_map:
         self.turn_left()
         self.turn_left()
         self.turn_left()
+        print(f"current_X:{self.current_x},current_y={self.current_y}")
 
     def turn_left(self):
         for x in range(self.height):
@@ -76,10 +78,12 @@ class Img_map:
         past_x = self.current_x
         self.current_x = self.current_y
         self.current_y = self.width - past_x - 1
+        print(f"current_X:{self.current_x},current_y={self.current_y}")
 
     def turn_back(self):
         self.turn_right()
         self.turn_right()
+        print(f"current_X:{self.current_x},current_y={self.current_y}")
 
     def __repr__(self) -> str:
         return self.img_map.__repr__()
