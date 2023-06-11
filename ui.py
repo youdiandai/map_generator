@@ -15,6 +15,8 @@ from ds import create_map
 from distribut_images import distribut
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+
+from PyQt5.QtCore import QTimer
 import sds_qrc
 
 m = create_map()
@@ -26,7 +28,7 @@ m.forward()
 m.turn_right()
 m.draw_map()
 
-
+global sec
 
 
 class Ui_Dialog(object):
@@ -139,6 +141,10 @@ class MainWindow(QtWidgets.QWidget):
 
     def __init__(self):
         QtWidgets.QWidget.__init__(self)
+        self.timer = QTimer()
+        global sec
+        sec = 0
+
         self.setWindowTitle('Main Window')
         self.resize(1218, 662)
 
@@ -166,11 +172,25 @@ class MainWindow(QtWidgets.QWidget):
         self.label_3.setGeometry(QtCore.QRect(1010, 450, 191, 161))
         self.label_3.setObjectName("label_3")
 
+        self.label_4 = QtWidgets.QLabel(self)
+        self.label_4.setGeometry(QtCore.QRect(890, 30, 81, 51))
+        self.label_4.setStyleSheet("font: 24pt \"华文新魏\";\n"
+                                   "font: 14pt \"新宋体\";")
+        self.label_4.setObjectName("label_4")
+        self.lcdNumber = QtWidgets.QLCDNumber(self)
+        self.lcdNumber.setGeometry(QtCore.QRect(990, 30, 121, 51))
+        self.lcdNumber.setObjectName("lcdNumber")
+
+        self.pushButton_5 = QtWidgets.QPushButton(self)
+        self.pushButton_5.setGeometry(QtCore.QRect(1000, 100, 112, 34))
+        self.pushButton_5.setObjectName("停止计时")
+
         self.retranslateUi(self)
 
         layout = QtWidgets.QGridLayout()
 
         self.setLayout(layout)
+        self.run()
 
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
@@ -187,6 +207,44 @@ class MainWindow(QtWidgets.QWidget):
         self.pushButton_3.clicked.connect(self.turn_right)
         self.pushButton_2.clicked.connect(self.forward)
         self.pushButton_4.clicked.connect(self.turn_back)
+        self.label_4.setText(_translate("Dialog", "已用时:"))
+        self.pushButton_5.setText(_translate("Dialog", "停止计时"))
+
+    def setTime(self):
+        global sec
+        sec += 1
+        print(sec)
+        self.lcdNumber.display(sec)
+
+        # 开始计数
+
+    def startCount(self):
+        # 设置计时间隔并启动，每隔1000毫秒（1秒）发送一次超时信号，循环进行，如果需要停止，可以调用timer.stop()进行停止
+        self.timer.start(1000)
+        # 当单击按钮开始计时后，按钮文字修改为停止计时，并且绑定的槽函数发生改变
+        self.pushButton_5.setText("停止计时")
+        self.pushButton_5.clicked.connect(self.stopTime)
+
+        # 停止计时，计时置为0
+
+    def stopTime(self):
+        global sec
+        sec = 0
+        self.timer.stop()
+        self.lcdNumber.display(sec)
+        # 当单击按钮停止计时时，按钮文字修改为开始计时，按钮绑定槽函数改变
+        self.pushButton_5.setText("开始计时")
+        self.pushButton_5.clicked.connect(self.startCount)
+
+        # 绑定信号与槽
+
+    def run(self):
+        # 每秒计数器计数结束后更新计数板数字
+        self.timer.timeout.connect(self.setTime)
+        # 单击按钮计数开始
+        self.pushButton_5.clicked.connect(self.startCount)
+        self.startCount()
+
 
     def turn_left(self):
         m.turn_left()
